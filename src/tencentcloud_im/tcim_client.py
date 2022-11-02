@@ -290,6 +290,16 @@ class GroupObj(object):
       self.GroupId = group_id
 
 
+class UserProfile(object):
+  """
+    用户资料
+      """
+
+  def __init__(self, tag, value):
+    self.Tag = tag
+    self.Value = value
+
+
 class TCIMClient(object):
   """
     Tecent Im Rest API Client
@@ -2261,6 +2271,30 @@ class TCIMClient(object):
       return requests.post(rest_url, params=query, data=json.dumps(data))
     except Exception as e:
       logger.error("update group attrfailed:{}".format(e))
+      return None
+
+  def update_user_profile(self, user_id: str, profile_list: List[UserProfile]):
+    """
+        https://cloud.tencent.com/document/product/269/1640
+        :param user_id:
+        :param profile_list:
+        :return:response
+        response.content
+        {
+            "ActionStatus": "OK",
+            "ErrorInfo": "",
+            "ErrorCode": 0
+        }
+        """
+    rest_url = "{}/profile/portrait_set".format(self.tecent_url)
+    data = {}
+    data["From_Account"] = user_id
+    data["ProfileItem"] = [i.__dict__ for i in profile_list]
+    try:
+      query = self._gen_query()
+      return requests.post(rest_url, params=query, data=json.dumps(data))
+    except Exception as e:
+      logger.error("update user profile failed:{}".format(e))
       return None
 
 
